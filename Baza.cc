@@ -6,12 +6,12 @@
 #include <fstream>
 using namespace boost::filesystem;
 using namespace std;
-const path sciezkaProgramu ("../..");
+const path sciezkaProgramu ("..");
 Baza::Baza() {
 	plyty_ = wczytajPlyty();
-	wyswietlBaze();
-	zapiszDoPliku();
-	wyszukajPliku("gi");
+	//wyswietlBaze();
+	//zapiszDoPliku();
+	//wyszukajPliku("Licz");
 }
 
 vector < Plyta > Baza::wczytajPlyty() {
