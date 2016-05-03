@@ -1,16 +1,16 @@
-#ifndef BAZA
-#define BAZA
+#ifndef BAZA_H
+#define BAZA_H
+
 #include "Plyta.h"
-class Baza 
-{	
-	char nazwa_;
+#include <string>
+
+class Baza { //domyslnie private	
+	std::vector < Plyta > plyty_;  
+
 	public:
-		Baza();
-		std::vector < Plyta > plyty_;
-		
-		std::vector < Plyta > wczytajPlyty();
-		void wyswietlBaze();
-		void zapiszDoPliku();
-		void wyszukajPliku(std::string);		
+		void wczytajPlyty( void ); //do atrybutu plyty_ wczytuje katalogi w biezacym katalogu
+		int ilePlyt( void );
+		bool zapiszDoPliku( std::string ); //zapisuje baze w pliku
+		std::vector < std::string > wyszukajPliku( const std::string, std::string );	
 };
 #endif

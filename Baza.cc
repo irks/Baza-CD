@@ -1,76 +1,74 @@
-#include "Baza.h"
-#include "Plyta.h"
 #include <vector>
 #include <boost/filesystem.hpp>
-#include <iostream>
 #include <fstream>
+#include "Baza.h"
+#include "Plyta.h"
+
 using namespace boost::filesystem;
 using namespace std;
-const path sciezkaProgramu ("..");
-Baza::Baza() {
-	plyty_ = wczytajPlyty();
-	//wyswietlBaze();
-	//zapiszDoPliku();
-	//wyszukajPliku("Licz");
-}
 
-vector < Plyta > Baza::wczytajPlyty() {
+const path sciezkaProgramu = current_path(); //sciezka w ktorej jest program
+
+void Baza::wczytajPlyty( void ) {
 	vector < Plyta > plyty;
-	directory_iterator iterator(sciezkaProgramu);
+	directory_iterator iterator( sciezkaProgramu );
+
 	for(; iterator != directory_iterator(); ++iterator) {
-    	if(is_directory(iterator->path())) {
-        	plyty.push_back(Plyta(iterator->path()));
-        }
+    	if( is_directory( iterator->path() ) ) 
+        	plyty.push_back( Plyta( iterator->path() ) ); 
     }
-    return plyty;
+
+    plyty_ = plyty;
 }
 
-void Baza::wyswietlBaze() {
-	for(int i=0; i<plyty_.size(); ++i) {
-		cout << "----------------" << endl;
-		cout << plyty_[i].nazwaPlyty_ << endl;
-		cout << "----------------" << endl;
-		for(int j=0; j<plyty_[i].pliki_.size(); ++j) {
-			cout << ((plyty_[i]).pliki_[j]) << endl;
-		}
-	}
-}
-
-void Baza::zapiszDoPliku() {
+bool Baza::zapiszDoPliku( string nazwaPlikuBazy ) {
 	ofstream plikBazy;
-	plikBazy.open("Baza_plyt_CD")/*("abc", std::ios::in | std::ios::out)*/;
-	if( plikBazy.good() == true ) {
-    	cout << "Uzyskano dostep do pliku!" << endl;
-    	
-    	for(int i=0; i<plyty_.size(); ++i) {
-			
-			plikBazy << "/" <<plyty_[i].nazwaPlyty_ << endl;
-		
-			for(int j=0; j<plyty_[i].pliki_.size(); ++j) {
-				plikBazy << ((plyty_[i]).pliki_[j]) << endl;
-			}	
+	plikBazy.open( nazwaPlikuBazy.c_str() );
+
+	if( plikBazy.good() == true ) {	//jezeli udalo sie otworzyc plik tekstowy o podanej nazwie
+    	for( int i = 0; i < plyty_.size(); ++i ) {
+			plikBazy << "/" << plyty_[i].nazwaPlyty_ << endl; //przed nazwa Plyty w pliku tekstowym znak '/'
+
+			for( int j = 0 ; j < plyty_[i].pliki_.size(); ++j) 
+				plikBazy << (plyty_[i]).pliki_[j] << endl;
 		}
 		plikBazy.close();
+		return true; //przekazanie ze udalo sie zapisac baze do pliku tekstowego
 	} 
 	else 
-		cout << "Dostep do pliku zostal zabroniony!" << endl;
+		return false; //przekazanie ze nie udalo sie otworzyc pliku tekstowego	
 }
 
-void Baza::wyszukajPliku(string szukany) {
-	string nazwaPlikuBazy = "Baza_plyt_CD";
-	fstream plikBazy(nazwaPlikuBazy.c_str(), ios::in | ios::out);
-	string dana;
-	string aktualnyKatalog;
-	while(!plikBazy.eof()) {
-		if(plikBazy.peek() != '/') {
-			getline(plikBazy, dana);
-			if(dana.find(szukany) != std::string::npos) {
-				cout<< aktualnyKatalog << "/" << dana <<endl;
+vector < string > Baza::wyszukajPliku( const string szukany, string nazwaPlikuBazy ) {
+	fstream plikBazy;
+	plikBazy.open( nazwaPlikuBazy.c_str(), ios::in  );
+	vector < string > znalezionePliki;
+
+	if( plikBazy.good() == true ) {
+		string dana;
+		string aktualnyKatalog;
+
+		znalezionePliki.push_back( "1" ); //pierwszy element "1" jezeli udalo sie otworzyc plik
+
+		while( !plikBazy.eof() ) {
+			if( plikBazy.peek() != '/' ) { //sprawdzanie czy dany wiersz tekstu nie jest nazwa Plyty
+				getline( plikBazy, dana );
+
+				if( dana.find( szukany ) != std::string::npos ) 
+					znalezionePliki.push_back( aktualnyKatalog + "/" + dana );
 			}
-		}
-		else {
-			plikBazy.get();
-			getline(plikBazy, aktualnyKatalog);
-		}
+			else { //jezeli dany wiersz tekstu to nazwa Plyty
+				plikBazy.get();
+				getline( plikBazy, aktualnyKatalog );
+			}
+		}	
 	}
+	else 
+		znalezionePliki.push_back( "0" ); //pierwszy element "0" jezeli nie udalo sie otworzyc plik
+
+	return znalezionePliki;
+}
+
+int Baza::ilePlyt( void ) {
+	return plyty_.size();
 }
