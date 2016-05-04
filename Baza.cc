@@ -1,3 +1,6 @@
+// Wrobel Ireneusz, Informatyka, grupa 2I5
+// Program sluzacy do tworzenia i obslugi bazy danych o kolekcji programow i plikow
+
 #include <vector>
 #include <boost/filesystem.hpp>
 #include <fstream>
@@ -14,9 +17,9 @@ void Baza::wczytajPlyty( void ) {
 	directory_iterator iterator( sciezkaProgramu );
 
 	for(; iterator != directory_iterator(); ++iterator) {
-    	if( is_directory( iterator->path() ) ) 
-        	plyty.push_back( Plyta( iterator->path() ) ); 
-    }
+    		if( is_directory( iterator->path() ) ) 
+        		plyty.push_back( Plyta( iterator->path() ) ); 
+        }
 
     plyty_ = plyty;
 }
@@ -30,7 +33,7 @@ bool Baza::zapiszDoPliku( string nazwaPlikuBazy ) {
 			plikBazy << "/" << plyty_[i].nazwaPlyty_ << endl; //przed nazwa Plyty w pliku tekstowym znak '/'
 
 			for( int j = 0 ; j < plyty_[i].pliki_.size(); ++j) 
-				plikBazy << (plyty_[i]).pliki_[j] << endl;
+				plikBazy << ( plyty_[i] ).pliki_[j] << endl;
 		}
 		plikBazy.close();
 		return true; //przekazanie ze udalo sie zapisac baze do pliku tekstowego
@@ -39,7 +42,7 @@ bool Baza::zapiszDoPliku( string nazwaPlikuBazy ) {
 		return false; //przekazanie ze nie udalo sie otworzyc pliku tekstowego	
 }
 
-vector < string > Baza::wyszukajPliku( const string szukany, string nazwaPlikuBazy ) {
+vector < string > Baza::wyszukajPliku( const string &szukany, string &nazwaPlikuBazy ) {
 	fstream plikBazy;
 	plikBazy.open( nazwaPlikuBazy.c_str(), ios::in  );
 	vector < string > znalezionePliki;
@@ -71,4 +74,14 @@ vector < string > Baza::wyszukajPliku( const string szukany, string nazwaPlikuBa
 
 int Baza::ilePlyt( void ) {
 	return plyty_.size();
+}
+
+vector < string > Baza::wyswietlAktualnaBaze( void ) {
+	vector < string > wszystkiePliki;
+
+	for( int i = 0; i < plyty_.size(); ++i) {	
+		for(int j = 0; j < plyty_[i].pliki_.size(); ++j) 
+			wszystkiePliki.push_back( plyty_[i].nazwaPlyty_ + "/" +  ( plyty_[i] ).pliki_[j] );
+	}
+	return wszystkiePliki;
 }

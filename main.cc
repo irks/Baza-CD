@@ -1,3 +1,7 @@
+// Wrobel Ireneusz, Informatyka, grupa 2I5
+// Program sluzacy do tworzenia i obslugi bazy danych o kolekcji programow i plikow
+
+
 #include <iostream>
 #include <vector>
 #include "Baza.h"
@@ -6,43 +10,50 @@
 using namespace std;
 
 int main() {
+	
+    const int LICZBA_LINII = 60;
     bool menu = true;
     int wybor; 
     string wyszukiwane; 
     string nazwaPlikuBazy;
     vector < string > znalezionePliki;
-    Baza* baza = new Baza();
+    vector < string > wszystkiePliki;
+    Baza baza;
 
     while( menu ) {
+
         cout << endl << endl;
         cout << "===================================================================" << endl;
         cout << "Jaka operacje chcesz wykonac? Wcisnij odpowiedni numer" << endl;
         cout << "1. Stworzyc baze wlozonych plyt CD i zapisac ja do pliku tekstowego" << endl;
         cout << "2. Wyszukac plik w bazie" << endl;
+        cout << "3. Wyswietlic aktualnie wlozone plyty CD" << endl;
         cout << "9. Wyjsc z programu" << endl;
         cout << "===================================================================" << endl;
 
         cin >> wybor;
 
-        for( int i = 0; i < 60; ++i )
+        for( int i = 0; i < LICZBA_LINII; ++i )
             cout << endl; //czyszczenie ekranu
 
         switch( wybor ) {
+
             case 1: 
                 cout << "Podaj nazwe pliku w ktorym chcesz zapisac baze plyt CD" << endl;
                 cin >> nazwaPlikuBazy;
 
-                baza-> wczytajPlyty();
+                baza.wczytajPlyty();
 
                 cout << endl;
 
-                if( baza-> zapiszDoPliku( nazwaPlikuBazy ) ) { //jezeli udalo sie otworzyc plik i zapisac
+                if( baza.zapiszDoPliku( nazwaPlikuBazy ) ) { //jezeli udalo sie otworzyc plik i zapisac
                     cout << "Zapisano baze plyt CD do pliku: " << nazwaPlikuBazy << endl; 
-                    cout << "Liczba plyt: " << baza-> ilePlyt() << endl;
+                    cout << "Liczba plyt: " << baza.ilePlyt() << endl;
                 }
                 else // wystapil blad przy probie otwarcia pliku
                     cout << "Nie udalo sie utworzyc pliku o podanej nazwie!" << endl;
                 break;
+
             case 2:
                 cout << "Podaj nazwe pliku w ktorym zapisana jest baza plyt" << endl;
                 cin >> nazwaPlikuBazy;
@@ -50,7 +61,7 @@ int main() {
                 cout << "Teraz podaj nazwe pliku ( lub jej fragment ) ktory chcesz znalezc" << endl;
                 cin >> wyszukiwane;
                
-                znalezionePliki = baza-> wyszukajPliku( wyszukiwane, nazwaPlikuBazy );
+                znalezionePliki = baza.wyszukajPliku( wyszukiwane, nazwaPlikuBazy );
 
                 cout << endl;
                 
@@ -64,13 +75,30 @@ int main() {
                     cout << "Nie udalo sie otworzyc pliku o podanej nazwie! Upewnij sie ze plik o podanej nazwie istnieje" << endl;
                 
                 break;
+
+            case 3:
+                baza.wczytajPlyty();
+                wszystkiePliki = baza.wyswietlAktualnaBaze();
+
+                cout << "Liczba wszystkich plikow i folderow na plytach: " << wszystkiePliki.size() << endl << endl;
+
+                for( int i = 0; i < wszystkiePliki.size(); ++i)
+                    cout << wszystkiePliki[i] << endl;
+
+                break;
             case 9:
                 menu = false;
                 break;
+
             default: 
                 cout << "Musisz podac numer odpowiadajacy danemu dzialaniu!" << endl;
                 break;
         }
+
+	
     }
+
+   
+
     return 0;
 }
